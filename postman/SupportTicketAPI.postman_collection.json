@@ -1,0 +1,235 @@
+{
+  "info": {
+    "name": "Support Ticket Management API",
+    "description": "Laravel 10 + Sanctum REST API for support ticket management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8002/api/v1" },
+    { "key": "token", "value": "" },
+    { "key": "ticket_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data && r.data.token) pm.collectionVariables.set('token', r.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"demo@support.test\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (User)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data && r.data.token) pm.collectionVariables.set('token', r.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@support.test\",\n  \"password\": \"password\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Agent John)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data && r.data.token) pm.collectionVariables.set('token', r.data.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{base_url}}/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@support.test\",\n  \"password\": \"password\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tickets",
+      "item": [
+        {
+          "name": "Create Ticket",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data && r.data.id) pm.collectionVariables.set('ticket_id', r.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/tickets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Cannot login to portal\",\n  \"description\": \"I get a 500 error when logging in.\",\n  \"priority\": \"high\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Tickets (with filters)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tickets?status=open&priority=high&sort=newest&per_page=10",
+              "host": ["{{base_url}}"],
+              "path": ["tickets"],
+              "query": [
+                { "key": "status", "value": "open" },
+                { "key": "priority", "value": "high" },
+                { "key": "sort", "value": "newest" },
+                { "key": "per_page", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Show Ticket",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/tickets/{{ticket_id}}"
+          }
+        },
+        {
+          "name": "Update Status -> in_progress (Agent)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/tickets/{{ticket_id}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"in_progress\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Status -> resolved (Agent)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/tickets/{{ticket_id}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Invalid Transition (open -> resolved)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{base_url}}/tickets/{{ticket_id}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
